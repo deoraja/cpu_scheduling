@@ -60,10 +60,55 @@ class FIFOScheduler:
         return f"Task queue is {self.queue}"
 
 
+class SJFScheduler:
+
+    def __init__(self):
+        self.tasks = []
+        self.completed_tasks = []
+        self.failed_tasks = []
+    
+    def submit_task(self,task):
+        self.tasks.append(task)
+        print(task)
+    
+    def run(self):
+        failure_probability = 0.3
+        #first sort the tasks by duration
+        self.tasks = sorted(self.tasks, key = lambda t: t.duration)
+
+        while self.tasks:
+            current_task = self.tasks.pop(0) #picking shoertest job always from sorted list
+            current_task.state = 'RUNNING'
+            print(current_task)
+            try:
+              time.sleep(current_task.duration)
+
+              # Simulate random failure
+              if random.random() < failure_probability:
+                raise Exception("Random failure occurred")
+              
+              current_task.state = 'COMPLETED'
+              self.completed_tasks.append(current_task)
+              print(f"{current_task}")
+
+            except Exception:
+                current_task.retry_count +=1
+
+                if current_task.retry_count <= current_task.max_retries:
+                    current_task.state = 'RETRYING'
+                    print(f"{current_task} | Retry_Attempt : {current_task.retry_count}")
+                    self.tasks.append(current_task)
+                    self.tasks.sort(key=lambda t: t.duration)
+                else:
+                  current_task.state = 'FAILED'
+                  self.failed_tasks.append(current_task)
+                  print(f"{current_task} (permanently failed)")
+            
+
 scheduler1 = FIFOScheduler()
 
-task1 = Task(1,'Basic',2)
-task2 = Task(2,'Intermediate',2)
+task1 = Task(1,'Basic',3)
+task2 = Task(2,'Intermediate',1)
 task3 = Task(3,'Advanced',2)
 
 scheduler1.submit_task(task1)
@@ -75,6 +120,29 @@ print("Completed Tasks:")
 for task in scheduler1.completed_tasks:
     print(task)
 
-print("Failed Tasks:")
-for task in scheduler1.failed_tasks:  # if implemented
+if len(scheduler1.failed_tasks) ==0:
+    print("All Tasks are completed")
+else:
+    print("Failed Tasks:")
+    for task in scheduler1.failed_tasks:  # if implemented
+     print(task)
+
+
+scheduler2 = SJFScheduler()
+
+scheduler2.submit_task(task1)
+scheduler2.submit_task(task2)
+scheduler2.submit_task(task3)
+
+scheduler2.run()
+print("\n--- Execution Summary ---")
+print("Completed Tasks:")
+for task in scheduler2.completed_tasks:
     print(task)
+
+if len(scheduler2.failed_tasks) ==0:
+    print("All Tasks are completed")
+else:
+    print("Failed Tasks:")
+    for task in scheduler2.failed_tasks:  # if implemented
+     print(task)
