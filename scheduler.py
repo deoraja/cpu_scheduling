@@ -9,6 +9,7 @@ class BaseScheduler:
         self.completed_tasks = []
         self.failed_tasks = []
         self.failure_probability = failure_probability
+        self.timeline = []
 
     def submit_task(self, task):
         self.tasks.append(task)
@@ -26,6 +27,8 @@ class BaseScheduler:
 
             print(current_task)
 
+            self.timeline.append(f"T{current_task.task_id}")
+
             try:
                 time.sleep(current_task.duration)
 
@@ -40,7 +43,7 @@ class BaseScheduler:
 
             except Exception:
                 current_task.retry_count += 1
-                
+
                 if current_task.retry_count <= current_task.max_retries:
                     current_task.state = 'RETRYING'
                     print(f"{current_task} | Retry_Attempt: {current_task.retry_count}")
@@ -103,6 +106,9 @@ class RoundRobin_Scheduler(BaseScheduler):
             print(current_task)
 
             execution_time = min(self.time_quantum,current_task.remaining_time)
+            
+            for _ in range(execution_time):
+                self.timeline.append(f"T{current_task.task_id}")
 
             time.sleep(execution_time)
 
@@ -132,7 +138,9 @@ class SRTF_Scheduler(BaseScheduler):
             current_task.state = 'RUNNING' 
 
             print(current_task)
-
+            
+            self.timeline.append(f"T{current_task.task_id}")
+            
             time.sleep(1)
 
             current_task.remaining_time -= 1

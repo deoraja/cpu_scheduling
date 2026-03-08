@@ -14,6 +14,9 @@ def print_results(scheduler):
                 print(t)
         else:
             print("All tasks completed successfully.")
+        
+        print("\nCPU Timeline:")
+        print(" | ".join(scheduler.timeline))
 
 def run_scheduler(name, scheduler, tasks):
         
@@ -24,5 +27,5 @@ def run_scheduler(name, scheduler, tasks):
             scheduler.submit_task(t)
 
         scheduler.run()
-        
+
         print_results(scheduler)
