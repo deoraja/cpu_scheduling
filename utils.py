@@ -16,7 +16,11 @@ def print_results(scheduler):
             print("All tasks completed successfully.")
         
         print("\nCPU Timeline:")
-        print(" | ".join(scheduler.timeline))
+        print("| " + " | ".join(scheduler.timeline) + " |")
+        print("0", end="")
+        for i in range(1, len(scheduler.timeline) + 1):
+           print(f"{' ' * 4}{i}", end="")
+        print("\n")
 
 def run_scheduler(name, scheduler, tasks):
         
