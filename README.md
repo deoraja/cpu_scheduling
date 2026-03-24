@@ -25,13 +25,11 @@ Implemented algorithms:
 
 ## Features
 
-- Multiple CPU scheduling algorithms
-- Modular Python project structure
-- Task lifecycle simulation
-- Failure simulation with retry logic
-- CPU execution timeline visualization
-- Easy to extend with new schedulers
-
+- Multiple CPU scheduling algorithms (FCFS, SJF, SRTF, Round Robin)
+- CLI-based execution with algorithm selection
+- Task lifecycle simulation with retry handling
+- Gantt chart visualization of CPU execution timeline
+- Performance metrics (Average Waiting Time, Turnaround Time)
 ---
 
 ## Project Structure
@@ -62,21 +60,54 @@ cpu_scheduler/
 
 ```
 --- SRTF Scheduler ---
-
+Task 1 | Basic | PENDING
+Task 2 | Intermediate | PENDING
+Task 3 | Advanced | PENDING
 Task 2 | Intermediate | RUNNING
+Task 2 | Intermediate | COMPLETED
+Task 3 | Advanced | RUNNING
 Task 3 | Advanced | RUNNING
 Task 3 | Advanced | COMPLETED
 Task 1 | Basic | RUNNING
+Task 1 | Basic | RUNNING
+Task 1 | Basic | RUNNING
 Task 1 | Basic | COMPLETED
 
-CPU Timeline
-------------
-T2 | T3 | T3 | T1 | T1 | T1
+Completed Tasks:
+Task 2 | Intermediate | COMPLETED
+Task 3 | Advanced | COMPLETED
+Task 1 | Basic | COMPLETED
+All tasks completed successfully.
+
+CPU Timeline (Gantt Chart):
+| T2 | T3 | T3 | T1 | T1 | T1 |
+0    1    2    3    4    5    6
+
+
+Performance Metrics
+-------------------
+Task 1 -> WT: 3, TAT: 6
+Task 2 -> WT: 0, TAT: 1
+Task 3 -> WT: 1, TAT: 3
+Average Waiting Time: 1.33
+Average Turnaround Time: 3.33
 ```
 
 The **CPU timeline** shows which task was executed at each time unit.
 
 ---
+## Scheduling Algorithms Comparison
+
+| Algorithm      | Average Waiting Time | Average Turnaround Time | Key Observation                          |
+|----------------|--------------------|------------------------|-----------------------------------------|
+| FCFS           | 4.33               | 6.33                   | Simple, but suffers from Belady's anomaly  |
+| SJF            | 1.33               | 3.33                   | Minimizes average waiting time          |
+| SRTF           | 1.33               | 3.33                   | Preemptive, best responsiveness         |
+| Round Robin    | 2.67               | 4.67                   | Fair time-slicing, slightly higher TAT |
+
+#### Belady's anomaly :  increasing the number of page frames in memory leads to an increase in the number of page faults
+
+#### Note: Values are based on default example tasks; your simulation may produce slightly different metrics depending on task durations and retries.
 
 ## Requirements
 
@@ -96,8 +127,19 @@ cd cpu_scheduling
 
 ### 2. Run the simulation
 
+The simulator can be run using command-line arguments to select scheduling algorithms and input tasks.
+
+### Run all algorithms (default)
 ```
 python main.py
+```
+
+### Run a specific algorithm
+```
+python main.py --algo srtf
+python main.py --algo fcfs
+python main.py --algo sjf
+python main.py --algo rr
 ```
 
 ---
@@ -121,8 +163,7 @@ Each task contains the following attributes:
 Tasks transition through several states:
 
 ```
-PENDING → RUNNING → COMPLETED
-                  → FAILED
+PENDING → RUNNING → COMPLETED → FAILED
 ```
 ---
 ### Example Task
